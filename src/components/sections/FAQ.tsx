@@ -1,10 +1,8 @@
 'use client'
 
-import { useRef, useState, useEffect } from 'react'
-import { gsap } from '@/lib/gsap'
-import Container from '@/components/ui/Container'
-import { Plus } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Plus, Minus, ArrowRight } from 'lucide-react'
 
 const FAQS = [
     {
@@ -27,88 +25,62 @@ const FAQS = [
 
 export default function FAQ() {
     const [activeIndex, setActiveIndex] = useState<number | null>(null)
-    const ctxRef = useRef<gsap.Context | null>(null)
-
-    useEffect(() => {
-        ctxRef.current = gsap.context(() => { })
-        return () => ctxRef.current?.revert()
-    }, [])
-
-    const toggleAccordion = (index: number, answerEl: HTMLDivElement) => {
-        const isOpen = activeIndex === index
-
-        // Close existing open accordion
-        if (activeIndex !== null && activeIndex !== index) {
-            const prevAnswer = document.querySelector(`#faq-answer-${activeIndex}`) as HTMLDivElement
-            if (prevAnswer) {
-                gsap.to(prevAnswer, { height: 0, opacity: 0, duration: 0.4, ease: 'power2.out' })
-            }
-        }
-
-        if (isOpen) {
-            gsap.to(answerEl, { height: 0, opacity: 0, duration: 0.4, ease: 'power2.out' })
-            setActiveIndex(null)
-        } else {
-            gsap.to(answerEl, { height: 'auto', opacity: 1, duration: 0.5, ease: 'power3.out' })
-            setActiveIndex(index)
-        }
-    }
 
     return (
-        <section className="py-32 bg-light">
-            <Container>
-                <div className="max-w-4xl mx-auto">
-                    <div className="mb-20">
-                        <h2 className="text-5xl md:text-7xl font-display mb-6">
-                            Common <span className="text-primary">Inquiries.</span>
-                        </h2>
-                        <p className="text-dark/50 text-xl font-sans">
-                            Everything you need to know about our process, technology, and vision for a sustainable future.
-                        </p>
-                    </div>
-
-                    <div className="flex flex-col border-t border-dark/10">
-                        {FAQS.map((faq, index) => (
-                            <div
-                                key={index}
-                                className="faq-item border-b border-dark/10 overflow-hidden"
-                            >
-                                <button
-                                    onClick={(e) => {
-                                        const answer = e.currentTarget.nextElementSibling as HTMLDivElement
-                                        toggleAccordion(index, answer)
-                                    }}
-                                    className="w-full flex items-center justify-between py-10 text-left group"
-                                >
-                                    <span className="text-2xl md:text-3xl font-display group-hover:text-primary transition-colors duration-300">
-                                        {faq.question}
-                                    </span>
-                                    <div className={cn(
-                                        "w-12 h-12 rounded-full border border-dark/10 flex items-center justify-center transition-all duration-500",
-                                        activeIndex === index ? "bg-primary border-primary rotate-45" : "group-hover:bg-dark group-hover:border-dark"
-                                    )}>
-                                        <Plus className={cn(
-                                            "transition-colors duration-300",
-                                            activeIndex === index ? "text-light" : "text-dark group-hover:text-light"
-                                        )} />
-                                    </div>
-                                </button>
-
-                                <div
-                                    id={`faq-answer-${index}`}
-                                    className="h-0 opacity-0 overflow-hidden"
-                                >
-                                    <div className="pb-10 pr-20">
-                                        <p className="text-xl text-dark/60 leading-relaxed font-sans">
-                                            {faq.answer}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+        <section className="py-32 bg-[#F3F2EF]">
+            <div className="max-w-4xl mx-auto px-6">
+                <div className="mb-24 text-center">
+                    <span className="text-sm font-mono uppercase tracking-widest text-dark/40 mb-4 block">F.A.Q</span>
+                    <h2 className="text-5xl md:text-7xl font-display mb-8 text-dark">
+                        Common <span className="text-primary italic">Inquiries</span>
+                    </h2>
                 </div>
-            </Container>
+
+                <div className="flex flex-col">
+                    {FAQS.map((faq, index) => (
+                        <div
+                            key={index}
+                            className="border-b border-dark/10 last:border-none"
+                        >
+                            <button
+                                onClick={() => setActiveIndex(activeIndex === index ? null : index)}
+                                className="w-full py-12 flex items-center justify-between group text-left"
+                            >
+                                <span className={`text-2xl md:text-3xl font-display transition-colors duration-300 ${activeIndex === index ? 'text-primary' : 'text-dark group-hover:text-primary/70'}`}>
+                                    {faq.question}
+                                </span>
+                                <div className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all duration-300 ${activeIndex === index ? 'bg-primary border-primary text-white' : 'border-dark/20 text-dark group-hover:border-primary group-hover:text-primary'}`}>
+                                    {activeIndex === index ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+                                </div>
+                            </button>
+
+                            <AnimatePresence>
+                                {activeIndex === index && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.4, ease: [0.04, 0.62, 0.23, 0.98] }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className="pb-12 text-xl text-dark/60 leading-relaxed font-light max-w-3xl">
+                                            {faq.answer}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="mt-24 p-12 bg-dark rounded-[2rem] text-center relative z-20">
+                    <h3 className="text-2xl text-white font-display mb-4">Still have questions?</h3>
+                    <p className="text-white/60 mb-8">We're here to help you navigate your sustainability journey.</p>
+                    <button className="inline-flex items-center gap-2 text-primary hover:gap-4 transition-all duration-300">
+                        Contact Support <ArrowRight className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
         </section>
     )
 }

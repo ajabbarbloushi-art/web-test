@@ -1,93 +1,157 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { gsap, ScrollTrigger } from '@/lib/gsap'
-import Container from '@/components/ui/Container'
+import { useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
+import ScrollTrigger from 'gsap/ScrollTrigger'
+import MagneticButton from '@/components/ui/MagneticButton'
+
+gsap.registerPlugin(ScrollTrigger)
+
+const FEATURES = [
+    {
+        title: 'AI Tracking',
+        description: 'Auto-measures your carbon footprint through intelligent data analysis.',
+        screenColor: 'bg-gradient-to-b from-blue-500 to-indigo-900',
+        content: 'Your Footprint: -15%'
+    },
+    {
+        title: 'Impact Rewards',
+        description: 'Earn credits for every sustainable choice you make. Redeem for real value.',
+        screenColor: 'bg-gradient-to-b from-green-500 to-emerald-900',
+        content: 'Rewards: 450 pts'
+    },
+    {
+        title: 'Community',
+        description: 'Join local challenges and compete with friends for the top green spot.',
+        screenColor: 'bg-gradient-to-b from-orange-500 to-red-900',
+        content: 'Rank: #3 Local'
+    }
+]
 
 export default function AppPreview() {
+    const containerRef = useRef<HTMLDivElement>(null)
     const phoneRef = useRef<HTMLDivElement>(null)
+    const [activeFeature, setActiveFeature] = useState(0)
 
     useEffect(() => {
         const ctx = gsap.context(() => {
+            // Phone Entrance
             gsap.fromTo(phoneRef.current,
-                { y: 100, rotateY: -15 },
+                { y: 100, rotateY: -20, opacity: 0 },
                 {
-                    y: -100,
-                    rotateY: 15,
+                    y: 0,
+                    rotateY: 0,
+                    opacity: 1,
+                    duration: 1.5,
                     scrollTrigger: {
-                        trigger: phoneRef.current,
-                        start: 'top bottom',
-                        end: 'bottom top',
+                        trigger: containerRef.current,
+                        start: 'top 60%',
+                        end: 'top 30%',
                         scrub: 1
                     }
                 }
             )
-        })
+
+            // Setup triggers for changing screens
+            FEATURES.forEach((_, i) => {
+                ScrollTrigger.create({
+                    trigger: `#feature-${i}`,
+                    start: 'top 50%',
+                    end: 'bottom 50%',
+                    onEnter: () => setActiveFeature(i),
+                    onEnterBack: () => setActiveFeature(i)
+                })
+            })
+
+            // Pin the phone
+            ScrollTrigger.create({
+                trigger: containerRef.current,
+                start: 'top top',
+                end: 'bottom bottom',
+                pin: '.phone-container',
+            })
+
+        }, containerRef)
         return () => ctx.revert()
     }, [])
 
     return (
-        <section className="py-32 overflow-hidden bg-white border-y border-dark/5">
-            <Container>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-                    <div>
-                        <span className="text-secondary font-medium tracking-widest uppercase text-sm mb-6 block">
-                            The App
-                        </span>
-                        <h2 className="text-5xl md:text-8xl font-display leading-[0.9] mb-8">
-                            Impact in <br />
-                            <span className="text-primary italic">Your Pocket.</span>
-                        </h2>
-                        <p className="text-dark/60 text-xl font-sans leading-relaxed mb-12 max-w-lg">
-                            Our upcoming sustainability app transforms green intentions into real actions.
-                            Track impact, earn rewards, and join a global community dedicated to Earth's future.
-                        </p>
+        <section ref={containerRef} className="py-24 bg-white relative">
+            <div className="max-w-[90vw] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
 
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">1</div>
-                                <p className="text-lg font-medium">AI-Behavioral Tracking</p>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary font-bold">2</div>
-                                <p className="text-lg font-medium">Real-time Impact Rewards</p>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center text-accent font-bold">3</div>
-                                <p className="text-lg font-medium">Community Challenges</p>
-                            </div>
-                        </div>
-
-                        <button className="mt-16 px-10 py-5 bg-dark text-light rounded-full text-lg font-medium hover:bg-primary transition-all duration-500 shadow-2xl">
-                            Join the Waitlist
-                        </button>
-                    </div>
-
-                    <div className="relative flex justify-center perspective-1000">
-                        {/* Phone Mockup Frame */}
+                {/* Visual Side (Sticky) */}
+                <div className="phone-container h-screen sticky top-0 flex items-center justify-center order-2 lg:order-1">
+                    <div className="relative">
+                        {/* 3D Phone Mockup */}
                         <div
                             ref={phoneRef}
-                            className="w-[300px] h-[600px] bg-dark rounded-[3rem] border-8 border-dark/20 relative shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden"
-                            style={{ transformStyle: 'preserve-3d' }}
+                            className="w-[320px] h-[650px] bg-dark rounded-[3.5rem] border-[8px] border-dark shadow-2xl relative overflow-hidden"
+                            style={{ boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)' }}
                         >
-                            {/* Internal Glassy UI Mockup */}
-                            <div className="absolute inset-0 p-8 flex flex-col gap-6 bg-gradient-to-b from-primary/20 to-dark">
-                                <div className="w-12 h-2 bg-white/20 rounded-full self-center mb-4" />
-                                <div className="h-40 w-full bg-white/10 rounded-2xl backdrop-blur-md border border-white/10" />
-                                <div className="h-20 w-full bg-secondary/20 rounded-2xl backdrop-blur-md border border-secondary/20" />
-                                <div className="flex flex-col gap-3 mt-auto">
-                                    <div className="h-4 w-3/4 bg-white/20 rounded-full" />
-                                    <div className="h-4 w-1/2 bg-white/10 rounded-full" />
-                                    <div className="h-14 w-full bg-white rounded-xl mt-4" />
-                                </div>
-                            </div>
-                        </div>
+                            {/* Dynamic Screen Content */}
+                            {FEATURES.map((feat, i) => (
+                                <div
+                                    key={i}
+                                    className={`absolute inset-0 transition-opacity duration-700 p-8 flex flex-col justify-between text-white ${activeFeature === i ? 'opacity-100' : 'opacity-0'}`}
+                                >
+                                    <div className={`absolute inset-0 ${feat.screenColor} z-0`} />
 
-                        {/* Decorative background shadow */}
-                        <div className="absolute -z-10 w-[150%] aspect-square bg-secondary/5 blur-[120px] rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                                    <div className="relative z-10 w-full pt-8">
+                                        <div className="flex justify-between items-center mb-8">
+                                            <div className="w-8 h-8 rounded-full bg-white/20" />
+                                            <div className="w-8 h-8 rounded-full bg-white/20" />
+                                        </div>
+                                        <div className="space-y-4">
+                                            <h4 className="text-3xl font-display">{feat.title}</h4>
+                                            <div className="w-16 h-1 bg-white/50" />
+                                        </div>
+                                    </div>
+
+                                    <div className="relative z-10 w-full mb-12">
+                                        <div className="p-6 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10">
+                                            <span className="text-4xl font-mono font-bold">{feat.content}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Notch / Dynamic Island */}
+                            <div className="absolute top-0 left-1/2 -translate-x-1/2 h-7 w-32 bg-dark rounded-b-xl z-20" />
+                        </div>
                     </div>
                 </div>
-            </Container>
+
+                {/* Content Side (Scrollable) */}
+                <div className="py-32 flex flex-col gap-[50vh] order-1 lg:order-2">
+                    <div className="mb-[20vh]">
+                        <span className="text-sm font-mono uppercase tracking-widest text-primary mb-4 block">The App</span>
+                        <h2 className="text-6xl md:text-8xl font-display leading-[0.9] text-dark mb-8">
+                            Impact in <br />
+                            <span className="text-gray-400 italic">Your Pocket.</span>
+                        </h2>
+                        <p className="text-xl text-dark/70 font-sans max-w-lg leading-relaxed">
+                            AI-powered sustainability solutions and app that reward green behavior and drive real impact.
+                        </p>
+                    </div>
+
+                    {FEATURES.map((feat, i) => (
+                        <div key={i} id={`feature-${i}`} className="feature-block opacity-50 transition-opacity duration-500 hover:opacity-100">
+                            <span className="text-6xl font-display text-dark/10 mb-6 block">0{i + 1}</span>
+                            <h3 className="text-4xl font-bold mb-4">{feat.title}</h3>
+                            <p className="text-xl text-dark/60 leading-relaxed max-w-md">
+                                {feat.description}
+                            </p>
+                        </div>
+                    ))}
+
+                    <div className="h-[20vh] flex items-center">
+                        <MagneticButton className="h-20 px-12 text-xl bg-dark text-white">
+                            Get Early Access
+                        </MagneticButton>
+                    </div>
+                </div>
+
+            </div>
         </section>
     )
 }

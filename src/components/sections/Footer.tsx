@@ -1,9 +1,12 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { gsap, ScrollTrigger } from '@/lib/gsap'
+import gsap from 'gsap'
+import ScrollTrigger from 'gsap/ScrollTrigger'
 import Container from '@/components/ui/Container'
-import { Linkedin, Mail, ArrowUpRight } from 'lucide-react'
+import { Linkedin, Mail } from 'lucide-react'
+
+gsap.registerPlugin(ScrollTrigger)
 
 export default function Footer() {
     const triggerRef = useRef<HTMLDivElement>(null)
@@ -11,38 +14,40 @@ export default function Footer() {
     const contentRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: triggerRef.current,
-                start: 'top bottom',
-                end: 'bottom bottom',
-                scrub: 1.5,
-            }
-        })
-
-        tl.to(circleRef.current, {
-            scale: 30,
-            ease: 'power3.inOut',
-        })
-            .to(contentRef.current, {
-                opacity: 1,
-                y: 0,
-                duration: 0.5
-            }, '-=0.3')
-
-        return () => {
-            ScrollTrigger.getAll().forEach(st => {
-                if (st.trigger === triggerRef.current) st.kill()
+        const ctx = gsap.context(() => {
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: triggerRef.current,
+                    start: 'top 80%', // Triggers as soon as it enters view
+                    end: 'bottom bottom',
+                    scrub: 1,
+                }
             })
-        }
+
+            tl.to(circleRef.current, {
+                scale: 30,
+                ease: 'power3.inOut',
+            })
+                .to(contentRef.current, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.5
+                }, '-=0.3')
+        }, triggerRef)
+
+        return () => ctx.revert()
     }, [])
 
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
     return (
-        <div ref={triggerRef} className="relative min-h-screen overflow-hidden flex flex-col justify-end">
-            {/* The Morph Circle */}
+        <div ref={triggerRef} className="relative min-h-screen overflow-hidden flex flex-col justify-end bg-[#F3F2EF] -mt-32">
+            {/* The Morph Circle - Positioned to emerge from under the FAQ CTA */}
             <div
                 ref={circleRef}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-dark z-0"
+                className="absolute top-48 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full bg-dark z-0"
             />
 
             <footer
