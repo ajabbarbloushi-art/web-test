@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 };
 
 import SmoothScroll from "@/components/layout/SmoothScroll";
+import CustomCursor from "@/components/ui/CustomCursor";
 import Header from "@/components/layout/Header";
 
 export default function RootLayout({
@@ -19,10 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn(inter.variable, instrumentSerif.variable, "antialiased")}>
       <body className="bg-background text-foreground">
-        <SmoothScroll>
-          <Header />
-          {children}
-        </SmoothScroll>
+        <SmoothScroll />
+        <CustomCursor />
+        <Header />
+        {children}
       </body>
     </html>
   );
