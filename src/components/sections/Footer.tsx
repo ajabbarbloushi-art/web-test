@@ -105,6 +105,27 @@ export default function Footer() {
                         </div>
                     </div>
 
+                    <div className="pt-24 pb-12 border-t border-light/10">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                            <div>
+                                <h3 className="text-3xl font-display text-light mb-4">Join the Movement</h3>
+                                <p className="text-light/50 font-sans max-w-md">
+                                    Subscribe to our newsletter for the latest updates on AI, sustainability, and green tech.
+                                </p>
+                            </div>
+                            <div className="flex gap-4">
+                                <input
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    className="flex-1 bg-light/5 border border-light/10 rounded-full px-6 py-4 text-light placeholder:text-light/30 focus:outline-none focus:border-secondary transition-colors"
+                                />
+                                <button className="bg-light text-dark px-8 py-4 rounded-full font-medium hover:bg-secondary transition-colors duration-300">
+                                    Subscribe
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="pt-12 border-t border-light/10 flex flex-col md:flex-row justify-between items-center gap-8">
                         <div className="text-light/30 text-sm font-sans">
                             © 2025 AINAR (FZE). All Rights Reserved.
